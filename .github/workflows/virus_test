@@ -1,36 +1,42 @@
-# This is a basic workflow to help you get started with Actions
+name: Run Appium Tests at Fixed Time
 
-name: CI
-
-# Controls when the workflow will run
+# 使用 schedule 事件來設定定時任務
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  schedule:
+    # 每天凌晨 2 點（UTC 時間）執行
+    - cron: '0 * * * *'
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+  test:
+    runs-on: windows-latest  # 使用 Ubuntu 作為運行環境
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+    # 步驟 1: 檢出代碼
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+    # 步驟 2: 設定 Python 環境
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # 使用 Python 3.8
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    # 步驟 3: 安裝 Python 依賴
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt  # 安裝 requirements.txt 中的所有依賴
+
+    # 步驟 4: 安裝 Appium
+    - name: Install Appium
+      run: |
+        npm install -g appium  # 全局安裝 Appium
+
+    # 步驟 5: 啟動 Appium 伺服器
+    - name: Start Appium server
+      run: |
+        appium --log-level info &  # 啟動 Appium 伺服器並將其運行於背景
+
+    # 步驟 6: 執行 Appium 測試腳本
+    - name: Run Appium tests
+      run: |
+        python virus_test for Huawei FGD-AL00.py  # 執行 Python 測試腳本（假設腳本為 appium_test.py）
